@@ -3,6 +3,7 @@ PhononModes
 
 Class to read in and store phonon mode eigenvalues, eigenvectors, and atomic
 masses from DMsymm-formatted phonons.out and apos.dat files.
+
 Object attributes:
 - num_atoms
 - num_modes
