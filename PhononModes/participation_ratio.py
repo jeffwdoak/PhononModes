@@ -7,9 +7,10 @@ import sys
 
 modes = PhononModes()
 
-index = int(sys.argv[1])
-
-pr = modes.participation_ratio(index)
-
-print pr
+print "Number of atoms:",modes.num_atoms
+print "Number of modes:",modes.num_modes
+print
+print "Mode_# Frequency_(cm^-1) Participation_Ratio"
+for i in range(modes.num_modes):
+    print i,modes.freqs[i],modes.participation_ratio(i)
 

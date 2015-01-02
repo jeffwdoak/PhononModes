@@ -15,6 +15,9 @@ class PhononModes(object):
     - freqs - numpy array of phonon eigenvalues [num_modes]
     - normal_modes - numpy array of phonon eigenvectors, shape:
           [num_modes, num_atoms, 3]
+    - num_atom_types - number of atomic species in the crystal
+    - atom_types - numpy array of the number of atoms of each type, shape:
+          [num_atom_types]
     - masses - numpy array of atomic masses [num_atoms]
     Object methods:
     - participation_ratio
@@ -25,7 +28,7 @@ class PhononModes(object):
         read from file phon_name, and atomic masses read from file mass_name.
         """
         self.read_normal_modes(phon_name)
-        self.read_atomic_masses(mass_name)
+        self.read_masses(mass_name)
 
     def read_normal_modes(self,in_name):
         """
@@ -45,14 +48,14 @@ class PhononModes(object):
                 freqs.append(float(j))
         self.freqs = np.array(freqs)
         normal_modes = []
-        for i in range(num_modes):
+        for i in range(self.num_modes):
             normal_modes.append([])
             in_file.readline()  # Discard blank line
-            for j in range(num_atoms):
+            for j in range(self.num_atoms):
                 normal_modes[i].append([])
                 line = in_file.readline().split()
                 for k in range(3):
-                    normal_modes[i,j].append(float(line[k+1]))
+                    normal_modes[i][j].append(float(line[k+1]))
         in_file.close()
         self.normal_modes = np.array(normal_modes)
 
@@ -65,14 +68,18 @@ class PhononModes(object):
         for i in range(4):
             mass_file.readline()
         # Get number of atom types
-        num_atom_types = int(mass_file.readline().split()[0])
+        self.num_atom_types = int(mass_file.readline().split()[0])
         # Get list of atomic masses (strings).
         masses = mass_file.readline().split()
         # Get list containing number of atoms of each type (strings).
         atom_types = mass_file.readline().split()
+        self.atom_types = np.array( [ int(i) for i in atom_types ] )
+        #self.atom_types = np.zeros(self.num_atom_types)
+        #for i in atom_types:
+        #    self.atom_types[i] = int(atom_types[i]) 
         mass_file.close()
         mass_vec = []
-        for i in range(num_atom_types):
+        for i in range(self.num_atom_types):
             for j in range(int(atom_types[i])):
                 #for k in range(3):
                 mass_vec.append(float(masses[i]))
@@ -85,12 +92,59 @@ class PhononModes(object):
         a value for a mode that ranges between 0 and 1, and gives a qualitative
         measure of the localization of a phonon mode: a value of 0 is localized in
         space while a value of 1 is delocalized across the entire crystal.
+        This definition is given by Eq. (1) of Pailhes, et al., PRL 113, 025506 
+        (2014). This version corrects an error with the definition given in Eq.
+        (4) of Hafner and Krajci, J. Phys.: Condens. Matter 5 (1993) 2489, where
+        the term 'square' is not squared after the summation, leading to values
+        of the participation ratio which are not normalized between 0 and 1.
         """
         square = 0.0
         quad = 0.0
         for j in range(len(self.normal_modes[index])):
             temp = np.dot(self.normal_modes[index,j],self.normal_modes[index,j])
-            square += temp/self.masses[j]
-            quad += temp**2/self.masses[j]
-        part = square/quad/self.num_atoms
+            temp = temp/self.masses[j]
+            square += temp
+            quad += temp**2
+        part = square**2/quad/self.num_atoms
         return part
+
+    def atomic_participation_ratio(self,index):
+        """
+        Function to calculate the atom-decomposed participation ratio for the
+        j-th atom in the k-th normal mode of a crystal. The atomic participation
+        ratio is taken from Eq. (2) of Pailhes, et al., PRL 113, 025506 (2014).
+        I do not believe that the atomic-participation-ratio is normalized
+        between 0 and 1. Function returns a numpy array of length self.num_atoms
+        containing the atomic participation ration of each atom in the mode
+        """
+        part = np.zeros(self.num_atoms)
+        quad = 0.0
+        for j in range(self.num_atoms):
+            temp = np.dot(self.normal_modes[index,j],self.normal_modes[index,j])
+            temp = temp/self.masses[j]
+            part[j] = temp
+            quad += temp**2
+        quad = np.sqrt(self.num_atoms*quad)
+        part = part/quad
+        return part
+
+    def list_of_atoms_by_species(self):
+        """
+        Function to sort each atom by its atomic species. Returns a nested list
+        containing each atom, shape: [num_atom_types, atom_# ].
+        E.g.,
+        [[0, 1, 2, 3, 4, 5],
+        [6, 7],
+        [8, 9, 10, 11, 12, 13, 14, 15]] for a 16-atom crystal, wherein atoms 1-6
+        are of type A, atoms 7-8 are of type B, and atoms 9-16 are of type C.
+        """
+        species = [ [] for i in self.atom_types ]
+        j = 0
+        for i in range(self.num_atoms):
+            if i >= np.sum(self.atom_types[:j+1]):
+                j += 1
+            print i,j
+            species[j].append(i)
+        return species
+
+
