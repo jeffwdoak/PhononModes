@@ -87,7 +87,6 @@ class PhononModes(object):
                 #for k in range(3):
                 mass_vec.append(float(masses[i]))
         self.masses = np.array(mass_vec)
-        print self.masses
 
     def participation_ratio(self,index):
         """
