@@ -146,7 +146,6 @@ class PhononModes(object):
         for i in range(self.num_atoms):
             if i >= np.sum(self.atom_types[:j+1]):
                 j += 1
-            print i,j
             species[j].append(i)
         return species
 
