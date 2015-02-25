@@ -88,6 +88,13 @@ class PhononModes(object):
                 mass_vec.append(float(masses[i]))
         self.masses = np.array(mass_vec)
 
+    def flattened_modes(self):
+        """
+        Returns a numpy array of normal modes, with each mode flattened to a
+        3*num_atoms length vector.
+        """
+        return np.array([ i.flatten() for i in self.normal_modes ])
+
     def participation_ratio(self,index):
         """
         Function to calculate the participation ratio of the k-th normal mode of a
