@@ -21,7 +21,7 @@ the number of atoms in the supercell. There are 6 frequencies per line.
 The next line is blank.
 The next 3*n*(n+1) lines contain normal mode displacements for each atom in each
 normal mode, followed by single blank lines. A line in the mode displacement
-section contains 
+section contains
     (i) the index of the atom in the supercell,
     (ii) the real displacement along x, y, and z of the atom in the mode, and
     (iii) the imaginary displacement along x, y, and z of the atom in the mode.
@@ -62,8 +62,6 @@ Example apos.dat file:
 
 """
 
-import sys
-
 import numpy as np
 
 from unitcell import *
@@ -80,7 +78,7 @@ class PhononModes(object):
     num_modes : int
         Number of phonon modes in the calculation.
     freqs : numpy array
-        Array of phonon-mode frequencies (eigenvalues) in cm**-1. 
+        Array of phonon-mode frequencies (eigenvalues) in cm**-1.
         len(freqs) == num_modes
     normal_modes : numpy array
         Array of phonon normal modes (eigenvectors).
@@ -91,7 +89,7 @@ class PhononModes(object):
         Array of the number of atoms of each type in the supercell.
         len(atom_types) == num_atom_types
     masses : numpy array
-        Array of atomic masses in g/mol. 
+        Array of atomic masses in g/mol.
         len(masses) == num_atoms
 
     """
@@ -145,7 +143,7 @@ class PhononModes(object):
                     line = in_file.readline().split()
                     for k in range(3):
                         normal_modes[i][j].append(float(line[k+1]))
-       self.normal_modes = np.array(normal_modes)
+        self.normal_modes = np.array(normal_modes)
 
     def read_masses(self, mass_name):
         """
@@ -171,7 +169,7 @@ class PhononModes(object):
             # Get list containing number of atoms of each type (strings).
             atom_types = mass_file.readline().split()
             self.atom_types = np.array([int(i)*num_cells for i in atom_types])
-       mass_vec = []
+        mass_vec = []
         for i in range(self.num_atom_types):
             for j in range(self.atom_types[i]):
                 #for k in range(3):
@@ -199,7 +197,7 @@ class PhononModes(object):
         where k is given by the argument index. The participation ratio is a
         value for a mode that ranges between 0 and 1, and gives a qualitative
         measure of the localization of a phonon mode: a value of 0 is localized
-        in space while a value of 1 is delocalized across the entire crystal. 
+        in space while a value of 1 is delocalized across the entire crystal.
         This definition is given by Eq. (1) of Pailhes, et al., PRL 113, 025506
         (2014). This version corrects an error with the definition given in Eq.
         (4) of Hafner and Krajci, J. Phys.: Condens. Matter 5 (1993) 2489, where
@@ -265,7 +263,7 @@ class PhononModes(object):
     def list_of_atoms_by_species(self):
         """
         Sort each atom by its atomic species.
-        
+
         Returns a nested list containing each atom, shape:
         [num_atom_types, atom_# ]
         e.g.,
