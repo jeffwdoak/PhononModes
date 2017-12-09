@@ -6,9 +6,12 @@ DMsymm written by Prof. Vidvuds Ozolins. The class relies on two input files to
 populate its data structures. These files are 'phonons.out' and 'apos.dat'. 
 The format of these files are shown below.
 
+This module relies on another module for parsing atomic unit cells <https://github.com/jeffwdoak/UnitCell>,
+which should be added to your `PYTHONPATH` for this module to work properly.
+
 This module has been used to calculate low-temperature ferroelectric phase 
 transitions in the semiconductor alloy system PbS--PbTe in
-Doak, Wolverton, Ozolins, Physical Review B, 92, 174306 (2015).
+[Doak, Wolverton, Ozolins, Physical Review B, 92, 174306 (2015).](http://link.aps.org/doi/10.1103/PhysRevB.92.174306)
 
 phonons.out
 -----------
