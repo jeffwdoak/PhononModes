@@ -123,30 +123,29 @@ class PhononModes(object):
             eigenvectors. Defaults to 'phonons.out'.
 
         """
-        in_file = open(in_name, "r")
-        line = in_file.readline().split()
-        self.num_atoms = int(line[0])
-        num_q_points = int(line[1])
-        in_file.readline()  # Discard q-point line
-        self.num_modes = 3*self.num_atoms
-        num_lines = self.num_modes/6  # Six frequencies per line
-        freqs = []
-        for i in range(num_lines):
+        with open(in_name, 'r') as in_file:
             line = in_file.readline().split()
-            for j in line:
-                freqs.append(float(j))
-        self.freqs = np.array(freqs)
-        normal_modes = []
-        for i in range(self.num_modes):
-            normal_modes.append([])
-            in_file.readline()  # Discard blank line
-            for j in range(self.num_atoms):
-                normal_modes[i].append([])
+            self.num_atoms = int(line[0])
+            num_q_points = int(line[1])
+            in_file.readline()  # Discard q-point line
+            self.num_modes = 3*self.num_atoms
+            num_lines = self.num_modes/6  # Six frequencies per line
+            freqs = []
+            for i in range(num_lines):
                 line = in_file.readline().split()
-                for k in range(3):
-                    normal_modes[i][j].append(float(line[k+1]))
-        in_file.close()
-        self.normal_modes = np.array(normal_modes)
+                for j in line:
+                    freqs.append(float(j))
+            self.freqs = np.array(freqs)
+            normal_modes = []
+            for i in range(self.num_modes):
+                normal_modes.append([])
+                in_file.readline()  # Discard blank line
+                for j in range(self.num_atoms):
+                    normal_modes[i].append([])
+                    line = in_file.readline().split()
+                    for k in range(3):
+                        normal_modes[i][j].append(float(line[k+1]))
+       self.normal_modes = np.array(normal_modes)
 
     def read_masses(self, mass_name):
         """
