@@ -158,25 +158,21 @@ class PhononModes(object):
             Name of file contaiing atomic masses. Defaults to 'apos.dat'.
 
         """
-        mass_file = open(mass_name, "r")
-        # Discard unit cell parameters.
-        for i in range(3):
-            mass_file.readline()
-        # Get number of unit cells
-        line = mass_file.readline().split()
-        num_cells = int(line[0])*int(line[1])*int(line[2])
-        # Get number of atom types
-        self.num_atom_types = int(mass_file.readline().split()[0])
-        # Get list of atomic masses (strings).
-        masses = mass_file.readline().split()
-        # Get list containing number of atoms of each type (strings).
-        atom_types = mass_file.readline().split()
-        self.atom_types = np.array([int(i)*num_cells for i in atom_types])
-        #self.atom_types = np.zeros(self.num_atom_types)
-        #for i in atom_types:
-        #    self.atom_types[i] = int(atom_types[i])
-        mass_file.close()
-        mass_vec = []
+        with open(mass_name, 'r') as mass_file:
+            # Discard unit cell parameters.
+            for i in range(3):
+                mass_file.readline()
+            # Get number of unit cells
+            line = mass_file.readline().split()
+            num_cells = int(line[0])*int(line[1])*int(line[2])
+            # Get number of atom types
+            self.num_atom_types = int(mass_file.readline().split()[0])
+            # Get list of atomic masses (strings).
+            masses = mass_file.readline().split()
+            # Get list containing number of atoms of each type (strings).
+            atom_types = mass_file.readline().split()
+            self.atom_types = np.array([int(i)*num_cells for i in atom_types])
+       mass_vec = []
         for i in range(self.num_atom_types):
             for j in range(self.atom_types[i]):
                 #for k in range(3):
