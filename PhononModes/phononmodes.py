@@ -189,6 +189,42 @@ class PhononModes(object):
         """
         return np.array([i.flatten() for i in self.normal_modes])
 
+    def normal_mode_displacements(self):
+        """
+        Atomic displacements corresponding to normal mode eigenvectors.
+
+        Returns
+        -------
+        normal_disp : numpy array
+            Array of normal mode displacements for each atom in each mode (units
+            of Angstroms).
+            np.shape(normal_disp) == np.shape(normal_modes)
+
+        """
+        normal_disp = self.normal_modes/np.sqrt(self.masses)
+        return normal_disp
+
+    def decompose_displacements(self, displacement):
+        """
+        Decompose an atomic displacment into a linear combination of normal
+        modes.
+
+        Parameters
+        ----------
+        displacement : numpy array
+            Array of atomic displacmements (in Angstroms).
+            np.shape(displacement) == (num_atoms, 3)
+
+        Returns
+        -------
+        weights : numpy array
+            Array of weights of contributions from each normal mode to the
+            displacement.
+
+        """
+        weights = np.dot(displacement, np.linalg.inv(self.normal_modes))
+        return weights
+
     def participation_ratio(self, index):
         """
         Participation ratio of the k-th normal mode of a crystal.
